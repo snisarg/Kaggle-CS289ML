@@ -1,3 +1,6 @@
+# Storing the dataset here locally
+/data
+
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
