@@ -14,5 +14,8 @@ for row in range(len(train)):
         newer_col.append(1)
     flip = not flip
 
+for i in range(5):
+    print train.loc[i]['address']
+
 train.new_col = newer_col
 print train
