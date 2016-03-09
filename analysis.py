@@ -69,6 +69,8 @@ inner_join = get_inner_join.get()
 # res = inner_join[['bidder_id', 'auction_count', 'outcome']].sort_values(by=['auction_count'], ascending=False).drop_duplicates()
 # print res[res['auction_count'] > -1]
 
+inner_join = inner_join.sort_values(by=['bidder_id', 'time'])
+
 last_bidder_id = -1
 time_diff = []
 for row_index in range(len(inner_join)):
@@ -84,4 +86,3 @@ for row_index in range(len(inner_join)):
 
 inner_join['time_diff'] = time_diff
 inner_join.to_csv('data/time_diff.csv', sep='\t')
-# print inner_join['self_outbid'].value_counts()
