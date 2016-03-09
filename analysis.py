@@ -56,12 +56,32 @@ get_inner_join = pool.apply_async(
 # bid_per_user = annot_bids['bidder_id'].value_counts()
 # print pandas.merge(left=bid_per_user, right=train, left_on='bidder_id', right_on='bidder_id')
 inner_join = get_inner_join.get()
+
+# Number of bids per bidder
 # inner_join['bid_count'] = inner_join.groupby(by='bidder_id', as_index=False)['bidder_id'].transform(
 #     lambda s: (float(s.count()-1)/515032.0))
 # print inner_join[['bidder_id', 'bid_count', 'outcome']].sort_values(by=['bid_count']).drop_duplicates()
 
-print inner_join[['bidder_id', 'auction']].drop_duplicates()['bidder_id'].value_counts()
+# print inner_join[['bidder_id', 'auction']].drop_duplicates()['bidder_id'].value_counts()
 
-inner_join['auction_count'] = inner_join[['bidder_id', 'auction']].drop_duplicates().groupby(by=['bidder_id'], as_index=False)['auction'].transform('count')
-res = inner_join[['bidder_id', 'auction_count', 'outcome']].sort_values(by=['auction_count'], ascending=False).drop_duplicates()
-print res[res['auction_count'] > -1]
+# Number of auctions per bidder participated
+# inner_join['auction_count'] = inner_join[['bidder_id', 'auction']].drop_duplicates().groupby(by=['bidder_id'], as_index=False)['auction'].transform('count')
+# res = inner_join[['bidder_id', 'auction_count', 'outcome']].sort_values(by=['auction_count'], ascending=False).drop_duplicates()
+# print res[res['auction_count'] > -1]
+
+last_bidder_id = -1
+time_diff = []
+for row_index in range(len(inner_join)):
+    print row_index
+    if last_bidder_id != inner_join.loc[row_index]['bidder_id']:
+        last_bidder_id = inner_join.loc[row_index]['bidder_id']
+        time_diff.append(0)
+    else:
+        # if inner_join.loc[row_index-1]['bidder_id'] == inner_join.loc[row_index]['bidder_id']:
+        time_diff.append(long(inner_join.loc[row_index]['time']) - long(inner_join.loc[row_index-1]['time']))
+        #else:
+        #    self_outbid.append(0)
+
+inner_join['time_diff'] = time_diff
+inner_join.to_csv('data/time_diff.csv', sep='\t')
+# print inner_join['self_outbid'].value_counts()
