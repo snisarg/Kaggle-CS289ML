@@ -5,7 +5,7 @@ import numpy
 K_FOLDS = 10
 
 
-def linear_regression(X, Y):
+def logistic_regression(X, Y):
     length = len(X)
 
     model = linear_model.LogisticRegression()
@@ -19,4 +19,4 @@ def linear_regression(X, Y):
     print 'All RMSEs',  numpy.sqrt(-scores)
     print 'Mean RMSE',  numpy.mean(numpy.sqrt(-scores))
     print 'Best RMSE',  numpy.min(numpy.sqrt(-scores))
-    print 'Coefficients', model.coef_
+    # print 'Coefficients', model.coef_
