@@ -65,24 +65,29 @@ inner_join = get_inner_join.get()
 # print inner_join[['bidder_id', 'auction']].drop_duplicates()['bidder_id'].value_counts()
 
 # Number of auctions per bidder participated
-# inner_join['auction_count'] = inner_join[['bidder_id', 'auction']].drop_duplicates().groupby(by=['bidder_id'], as_index=False)['auction'].transform('count')
-# res = inner_join[['bidder_id', 'auction_count', 'outcome']].sort_values(by=['auction_count'], ascending=False).drop_duplicates()
-# print res[res['auction_count'] > -1]
+inner_join['auction_count'] = inner_join[['bidder_id', 'auction']].drop_duplicates().groupby(by=['bidder_id'], as_index=False)['auction'].transform(
+    lambda s: float(s.count()-1)/1622.0
+)
+res = inner_join[['bidder_id', 'auction_count', 'outcome']].sort_values(by=['auction_count'], ascending=False).drop_duplicates()
+# inner_join['auction_count'] = res[res['auction_count'] > -1]
+print res[res['auction_count'] > -1]
 
-inner_join = inner_join.sort_values(by=['bidder_id', 'time'])
+# print inner_join[['bidder_id', 'auction_count']]
 
-last_bidder_id = -1
-time_diff = []
-for row_index in range(len(inner_join)):
-    print row_index
-    if last_bidder_id != inner_join.loc[row_index]['bidder_id']:
-        last_bidder_id = inner_join.loc[row_index]['bidder_id']
-        time_diff.append(0)
-    else:
-        # if inner_join.loc[row_index-1]['bidder_id'] == inner_join.loc[row_index]['bidder_id']:
-        time_diff.append(long(inner_join.loc[row_index]['time']) - long(inner_join.loc[row_index-1]['time']))
-        #else:
-        #    self_outbid.append(0)
-
-inner_join['time_diff'] = time_diff
-inner_join.to_csv('data/time_diff.csv', sep='\t')
+# inner_join = inner_join.sort_values(by=['bidder_id', 'time'])
+#
+# last_bidder_id = -1
+# time_diff = []
+# for row_index in range(len(inner_join)):
+#     print row_index
+#     if last_bidder_id != inner_join.loc[row_index]['bidder_id']:
+#         last_bidder_id = inner_join.loc[row_index]['bidder_id']
+#         time_diff.append(0)
+#     else:
+#         # if inner_join.loc[row_index-1]['bidder_id'] == inner_join.loc[row_index]['bidder_id']:
+#         time_diff.append(long(inner_join.loc[row_index]['time']) - long(inner_join.loc[row_index-1]['time']))
+#         #else:
+#         #    self_outbid.append(0)
+#
+# inner_join['time_diff'] = time_diff
+# inner_join.to_csv('data/time_diff.csv', sep='\t')
