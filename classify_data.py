@@ -26,7 +26,7 @@ def logistic_regression(X, Y):
 
 def random_forest(x, y):
     model = RandomForestRegressor(n_estimators=50,
-                          max_features=1,
+                          max_features=len(x.columns),
                           max_depth= 9,
                           n_jobs=1)
     predicted = cross_validation.cross_val_predict(model, x, y, 10, 1, 0, None, 0)
