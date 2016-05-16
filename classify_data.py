@@ -1,5 +1,5 @@
-import pandas as pd
-from sklearn import linear_model, cross_validation
+import pandas
+from sklearn import linear_model, cross_validation, neural_network
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
 from sklearn.metrics import roc_curve,auc
@@ -113,3 +113,19 @@ def classify(X,Y,model_type,X_test,X_test_id):
     filename = "submission_"+model_type+".csv"
     submit.to_csv(filename,index=False)
     print "submit file written"
+    print 'All RMSEs',  numpy.sqrt(-scores)
+    print 'Mean RMSE',  numpy.mean(numpy.sqrt(-scores))
+    print 'Best RMSE',  numpy.min(numpy.sqrt(-scores))
+    print 'Coefficients', model.feature_importances_
+
+
+def neural_networks(x, y):
+    model = neural_network.MLPRegressor([1,1,1,1,1], 'relu', 'adam', 0.0001, 200, 'constant', 0.001, 0.5, 200,
+                                        True, None, 0.0001, False, False, 0.9, True, False, 0.1, 0.9, 0.999, 1e-08)
+    predicted = cross_validation.cross_val_predict(model, x, y, 10, 1, 0, None, 0)
+    scores = cross_validation.cross_val_score(model, x, y,  cv=10, scoring='mean_squared_error')
+
+    print 'All RMSEs',  numpy.sqrt(-scores)
+    print 'Mean RMSE',  numpy.mean(numpy.sqrt(-scores))
+    print 'Best RMSE',  numpy.min(numpy.sqrt(-scores))
+    print 'Coefficients', model.get_params(True)
