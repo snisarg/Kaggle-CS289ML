@@ -23,31 +23,31 @@ print "Bids read"
 #     lambda: pandas.merge(left=bids, right=train, left_on='bidder_id', right_on='bidder_id')
 #                   .sort_values(by=['bidder_id']))
 
-# annot_bids = pandas.merge(left=test, right=bids, how='left', left_on='bidder_id', right_on='bidder_id')
+annot_bids = pandas.merge(left=test, right=bids, how='left', left_on='bidder_id', right_on='bidder_id')
 # print annot_bids[['auction', 'bidder_id', 'outcome', 'time']]
 
 # annot_bids[['auction', 'bidder_id', 'outcome', 'time']].to_csv('data/temp.csv', sep='\t')
 # Looks like the bot bidder outbids his own highest bid
 # Self outbid column addition :
 # UNCOMMENT TO GENERATE FILE. IT TAKES A WHILE
-# last_auction_id = 'abc'
-# prev_row = 0
-# self_outbid = []
-# for index, row in annot_bids.iterrows():
-#     # print row_index
-#     if last_auction_id != row['auction']:
-#         last_auction_id = row['auction']
-#         self_outbid.append(0)
-#     else:
-#         if prev_row['bidder_id'] == row['bidder_id']:
-#             self_outbid.append(1)
-#         else:
-#             self_outbid.append(0)
-#     prev_row = row
-#
-# annot_bids['self_outbid'] = self_outbid
-# annot_bids.to_csv('data/test_self_bid.csv', sep='\t')
-# print "Self_bid done"
+last_auction_id = 'abc'
+prev_row = 0
+self_outbid = []
+for index, row in annot_bids.iterrows():
+    # print row_index
+    if last_auction_id != row['auction']:
+        last_auction_id = row['auction']
+        self_outbid.append(0)
+    else:
+        if prev_row['bidder_id'] == row['bidder_id']:
+            self_outbid.append(1)
+        else:
+            self_outbid.append(0)
+    prev_row = row
+
+annot_bids['self_outbid'] = self_outbid
+annot_bids.to_csv('data/test_self_bid.csv', sep='\t')
+print "Self_bid done"
 # print annot_bids['self_outbid'].value_counts()
 # 0    5582005
 # 1    2074329
@@ -84,32 +84,32 @@ print "Auction count done"
 
 # print inner_join[['bidder_id', 'auction_count']]
 
-# inner_join = inner_join.sort_values(by=['bidder_id', 'time'])
+inner_join = inner_join.sort_values(by=['bidder_id', 'time'])
 # inner_join.to_csv('data/sorted_inner_join.csv')
 # print inner_join[['bidder_id', 'time']]
 
-# last_bidder_id = 'abc'
-# prev_row = 0
-# time_diff = []
-# for index, row in inner_join.iterrows():
-#     # print row_index
-#     if last_bidder_id != row['bidder_id']:
-#         last_bidder_id = row['bidder_id']
-#         time_diff.append(0)
-#     else:
-#         # if inner_join.loc[row_index-1]['bidder_id'] == inner_join.loc[row_index]['bidder_id']:
-#         difference = float(row['time']) - float(prev_row['time'])
-#         if difference < 0:
-#             print prev_row
-#             print row
-#         time_diff.append(difference)
-#         #else:
-#         #    self_outbid.append(0)
-#     prev_row = row
-# inner_join['time_diff'] = time_diff
-# print "Time diff done"
-# inner_join.to_csv('data/test_time_diff.csv', sep='\t')
-# print "time_diff.csv written"
+last_bidder_id = 'abc'
+prev_row = 0
+time_diff = []
+for index, row in inner_join.iterrows():
+    # print row_index
+    if last_bidder_id != row['bidder_id']:
+        last_bidder_id = row['bidder_id']
+        time_diff.append(0)
+    else:
+        # if inner_join.loc[row_index-1]['bidder_id'] == inner_join.loc[row_index]['bidder_id']:
+        difference = float(row['time']) - float(prev_row['time'])
+        if difference < 0:
+            print prev_row
+            print row
+        time_diff.append(difference)
+        #else:
+        #    self_outbid.append(0)
+    prev_row = row
+inner_join['time_diff'] = time_diff
+print "Time diff done"
+inner_join.to_csv('data/test_time_diff.csv', sep='\t')
+print "time_diff.csv written"
 
 
 inner_join['device_count'] = inner_join[['bidder_id', 'device']].drop_duplicates().groupby(by=['bidder_id'], as_index=False)['device'].transform(
