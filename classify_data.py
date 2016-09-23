@@ -1,5 +1,5 @@
-import pandas
-from sklearn import linear_model, cross_validation, neural_network
+import pandas as pd
+from sklearn import linear_model, cross_validation, neural_network, grid_search
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
 from sklearn.metrics import roc_curve,auc
@@ -129,3 +129,13 @@ def neural_networks(x, y):
     print 'Mean RMSE',  numpy.mean(numpy.sqrt(-scores))
     print 'Best RMSE',  numpy.min(numpy.sqrt(-scores))
     print 'Coefficients', model.get_params(True)
+
+
+def grid_logistic(X, Y):
+    model = linear_model.LogisticRegression(n_jobs=7)
+    parameters = {'C': [i for i in range(50, 500, 50)]}
+    clf = grid_search.GridSearchCV(model, parameters)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+
+
