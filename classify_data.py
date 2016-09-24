@@ -134,8 +134,26 @@ def neural_networks(x, y):
 def grid_logistic(X, Y):
     model = linear_model.LogisticRegression(n_jobs=7)
     parameters = {'C': [i for i in range(50, 500, 50)]}
-    clf = grid_search.GridSearchCV(model, parameters)
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
     clf.fit(X, Y)
     print clf.grid_scores_
+    print clf.best_params_
 
 
+def grid_random_forest(X, Y):
+    model = RandomForestClassifier(n_jobs=7)
+    parameters = {'n_estimators': [i for i in range(10, 100, 10)]}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+
+def grid_svm(X, Y):
+    model = SVC(probability=True)
+    parameters = {'C': [i for i in range(1, 40, 2)],
+                  'kernel': ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
