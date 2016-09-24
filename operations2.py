@@ -1,6 +1,6 @@
 import pandas
 import classify_data
-from sklearn import neural_network, linear_model, grid_search
+from sklearn import neural_network, linear_model, grid_search, ensemble, tree, svm
 
 def grid_nn(X, Y):
     model = model = neural_network.MLPClassifier(activation='relu', solver='lbgfs')
@@ -22,7 +22,7 @@ def grid_lr(X, Y):
 
 
 def grid_ridge(X, Y):
-    model = linear_model.Ridge()
+    model = linear_model.Ridge(random_state=7)
     parameters = {'alpha': [i * 0.1 for i in range(10)],
                   'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag']}
     clf = grid_search.GridSearchCV(model, parameters, cv=10)
@@ -41,9 +41,20 @@ def grid_bayesian(X, Y):
 
 
 def grid_SGD(X, Y):
-    model = linear_model.SGDClassifier()
+    model = linear_model.SGDClassifier(random_state=7)
     parameters = {'loss': ['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
                   'penalty': ['none', 'l2', 'l1', 'elasticnet']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+
+def grid_ada(X, Y):
+    model = ensemble.AdaBoostClassifier(random_state=7)
+    parameters = {'base_estimator': [tree.DecisionTreeClassifier(), svm.SVC()],
+                  'n_estimators': [i for i in range(30, 80, 10)],
+                  'algorithm': ['SAMME', 'SAMME.R']}
     clf = grid_search.GridSearchCV(model, parameters, cv=10)
     clf.fit(X, Y)
     print clf.grid_scores_
@@ -63,7 +74,7 @@ final_col = pandas.read_csv('data/final_col.csv')
 #     final_col['outcome'])
 
 
-result = grid_SGD(
+result = grid_ada(
     final_col[['outbid_count','time_diff_mean', 'bid_count', 'auction_count','device_count','ip_count',
                'country_count','dev_ent']],
     final_col['outcome'])
