@@ -15,6 +15,6 @@ print X
 
 smote_col = pandas.DataFrame(X, columns=['outbid_count', 'time_diff_mean', 'bid_count', 'auction_count',
                                        'device_count', 'ip_count', 'country_count', 'dev_ent'])
-smote_col['outsome'] = Y
+smote_col['outcome'] = Y
 
 smote_col.to_csv('data/smote_col.csv')
