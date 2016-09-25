@@ -14,7 +14,7 @@ def grid_grad_boost(X, Y):
     print clf.best_params_
 
 
-final_col = pandas.read_csv('data/final_col.csv')
+final_col = pandas.read_csv('data/smote_col.csv')
 
 
 result = grid_grad_boost(
