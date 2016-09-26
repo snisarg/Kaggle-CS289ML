@@ -141,9 +141,10 @@ def grid_logistic(X, Y):
 
 
 def grid_random_forest(X, Y):
-    model = RandomForestClassifier(n_jobs=7)
-    parameters = {'n_estimators': [i for i in range(10, 100, 10)]}
-    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    model = RandomForestClassifier(random_state=7)
+    parameters = {'n_estimators': [i for i in range(50, 1050, 50)],
+                  'max_features': ['sqrt', 'log2', 'auto']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10, n_jobs=8)
     clf.fit(X, Y)
     print clf.grid_scores_
     print clf.best_params_
@@ -172,7 +173,7 @@ def grid_nn(X, Y):
 def grid_lr(X, Y):
     model = linear_model.LogisticRegression(random_state=7)
     parameters = {'penalty': ['l1'],
-                  'C': [60, 70, 80, 90, 100],
+                  'C': [i for i in range(10, 100, 10)],
                   'solver': ['liblinear']
                   }
     clf = grid_search.GridSearchCV(model, parameters, cv=10)
