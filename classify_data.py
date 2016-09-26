@@ -1,5 +1,5 @@
 import pandas as pd
-from sklearn import linear_model, cross_validation, neural_network, grid_search
+from sklearn import linear_model, cross_validation, neural_network, grid_search, tree, ensemble
 from sklearn.svm import SVC
 from sklearn.ensemble import RandomForestClassifier,GradientBoostingClassifier
 from sklearn.metrics import roc_curve,auc
@@ -151,9 +151,94 @@ def grid_random_forest(X, Y):
 
 def grid_svm(X, Y):
     model = SVC(probability=True)
-    parameters = {'C': [i for i in range(1, 40, 2)],
-                  'kernel': ['linear', 'poly', 'rbf', 'sigmoid', 'precomputed']}
+    parameters = {'C': [1, 10, 50, 100, 500, 1000],
+                  'kernel': ['rbf']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10, n_jobs=8)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+
+def grid_nn(X, Y):
+    model = model = neural_network.MLPClassifier(activation='relu', solver='lbgfs')
+    parameters = {'hidden_layer_size': [[5, 15, 15, 5], [10, 30, 30, 10], [5, 15, 30, 30, 15, 5],
+                                        [50, 100, 100, 100, 75, 50]]}
     clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+# Reg
+def grid_lr(X, Y):
+    model = linear_model.LogisticRegression(random_state=7)
+    parameters = {'penalty': ['l1'],
+                  'C': [60, 70, 80, 90, 100],
+                  'solver': ['liblinear']
+                  }
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+
+# Reg
+def grid_ridge(X, Y):
+    model = linear_model.Ridge(random_state=7)
+    parameters = {'alpha': [i * 0.1 for i in range(10)],
+                  'solver': ['auto', 'svd', 'cholesky', 'lsqr', 'sparse_cg', 'sag']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+# Reg
+def grid_bayesian(X, Y):
+    model = linear_model.BayesianRidge()
+    parameters = {'n_iter': [100, 200, 300, 400, 500, 600]}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+
+def grid_SGD(X, Y):
+    model = linear_model.SGDClassifier(random_state=7)
+    parameters = {'loss': ['hinge', 'log', 'modified_huber', 'squared_hinge', 'perceptron'],
+                  'penalty': ['none', 'l2', 'l1', 'elasticnet']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+
+def grid_DT(X, Y):
+    model = tree.DecisionTreeClassifier(random_state=7)
+    parameters = {'criterion': ['gini', 'entropy'],
+                  'max_features': ['auto', 'sqrt', 'log2']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print clf.grid_scores_
+    print clf.best_params_
+
+
+def grid_ada(X, Y):
+    model = ensemble.AdaBoostClassifier(random_state=7)
+    parameters = {'base_estimator': [tree.DecisionTreeClassifier()],
+                  'n_estimators': [i for i in range(30, 80, 10)],
+                  'algorithm': ['SAMME', 'SAMME.R']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10)
+    clf.fit(X, Y)
+    print 'Options considered: {}'.format(clf.grid_scores_)
+    print 'Best option: {}'.format(clf.best_params_)
+
+
+def grid_grad_boost(X, Y):
+    model = ensemble.GradientBoostingClassifier(random_state=7)
+    parameters = {'loss': ['deviance', 'exponential'],
+                  'n_estimators': [i for i in range(80, 200, 10)],
+                  'max_depth': [2, 3, 4, 5],
+                  'max_features': ['log2', 'sqrt']}
+    clf = grid_search.GridSearchCV(model, parameters, cv=10, n_jobs=7)
     clf.fit(X, Y)
     print clf.grid_scores_
     print clf.best_params_
@@ -186,7 +271,7 @@ def classify_only(X, Y, model):
     plt.ylim([-0.05, 1.05])
     plt.xlabel('False Positive Rate')
     plt.ylabel('True Positive Rate')
-    plt.title('Receiver operating characteristic example: '+model_type)
+    plt.title('Receiver operating characteristic example: '+model.__class__.__name__)
     plt.legend(loc="lower right")
     plt.show()
     print "Plot done"
